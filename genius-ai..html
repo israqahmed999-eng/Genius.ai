@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genius AI</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#0d1422;
+ color:white;
+}
+.app{
+ max-width:600px;
+ margin:auto;
+ height:100dvh;
+ display:flex;
+ flex-direction:column;
+}
+header{
+ padding:15px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#151f31;
+ border-bottom:1px solid #29364b;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+ background:#3979e8;
+ border-radius:12px;
+ padding:10px;
+ font-size:22px;
+}
+.brand h2{margin:0;font-size:19px}
+.brand small{color:#9cacc4}
+.header-buttons{display:flex;gap:8px}
+.icon-btn{
+ border:0;background:#27364d;
+ color:white;padding:10px;
+ border-radius:10px;font-size:17px;
+}
+.welcome{
+ text-align:center;
+ padding:28px 15px 12px;
+}
+.welcome .brain{font-size:38px}
+.welcome h2{margin:8px 0}
+.welcome p{color:#aab8ce;font-size:13px}
+.suggestions{
+ display:flex;flex-wrap:wrap;
+ justify-content:center;gap:8px;
+ padding:10px 14px;
+}
+.suggestion{
+ background:#1b2a40;
+ color:#dce7f8;
+ border:1px solid #35445c;
+ padding:10px 12px;
+ border-radius:18px;
+ font-size:12px;
+}
+#messages{
+ flex:1;
+ overflow-y:auto;
+ padding:15px;
+ display:flex;
+ flex-direction:column;
+ gap:16px;
+}
+.message{
+ max-width:85%;
+ padding:13px 15px;
+ border-radius:17px;
+ line-height:1.5;
+ font-size:14px;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+}
+.user{
+ align-self:flex-end;
+ background:#3979e8;
+ border-bottom-right-radius:5px;
+}
+.ai{
+ align-self:flex-start;
+ background:#202e43;
+ border-bottom-left-radius:5px;
+}
+.ai-label{
+ color:#8eb7ff;
+ font-size:11px;
+ margin-bottom:5px;
+ font-weight:bold;
+}
+.typing{color:#aab8ce;font-style:italic}
+.composer{
+ padding:12px;
+ background:#151f31;
+ border-top:1px solid #29364b;
+}
+.input-box{
+ display:flex;
+ gap:8px;
+ align-items:flex-end;
+ background:#202e43;
+ border:1px solid #394a63;
+ padding:8px;
+ border-radius:16px;
+}
+textarea{
+ flex:1;
+ background:transparent;
+ color:white;
+ border:0;
+ outline:none;
+ resize:none;
+ min-height:42px;
+ max-height:110px;
+ padding:10px 5px;
+ font-size:15px;
+ font-family:Arial;
+}
+textarea::placeholder{color:#98a8bf}
+.send{
+ background:#3979e8;
+ color:white;border:0;
+ border-radius:12px;
+ padding:12px 15px;
+ font-size:17px;
+}
+.footer-note{
+ text-align:center;
+ color:#8292a9;
+ font-size:10px;
+ padding-top:9px;
+}
+.hidden{display:none!important}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+ <div class="brand">
+  <div class="logo">🧠</div>
+  <div>
+   <h2>Genius AI</h2>
+   <small>Your smart assistant</small>
+  </div>
+ </div>
+
+ <div class="header-buttons">
+  <button class="icon-btn" onclick="toggleLanguage()"
+  id="languageBtn">HI</button>
+  <button class="icon-btn" onclick="newChat()"
+  title="New Chat">＋</button>
+ </div>
+</header>
+
+<section class="welcome" id="welcome">
+ <div class="brain">✨</div>
+ <h2 id="welcomeTitle">Hello! How can I help?</h2>
+ <p id="welcomeText">
+ Ask anything. Learn anything. Create anything.
+ </p>
+</section>
+
+<div class="suggestions" id="suggestions">
+ <button class="suggestion"
+ onclick="askSuggestion('Explain artificial intelligence')">
+ 🤖 AI & Technology
+ </button>
+ <button class="suggestion"
+ onclick="askSuggestion('Help me with my studies')">
+ 📚 Study Help
+ </button>
+ <button class="suggestion"
+ onclick="askSuggestion('Write an application')">
+ ✍️ Writing
+ </button>
+ <button class="suggestion"
+ onclick="askSuggestion('Translate Hello into Hindi')">
+ 🌐 Translation
+ </button>
+</div>
+
+<main id="messages"></main>
+
+<div class="composer">
+ <div class="input-box">
+  <textarea id="question"
+  placeholder="Message Genius AI..."
+  rows="1"></textarea>
+  <button class="send" onclick="sendMessage()">➤</button>
+ </div>
+ <div class="footer-note">
+  Genius AI Demo • Check important information
+ </div>
+</div>
+
+</div>
+
+<script>
+let language="en";
+let chatHistory=[];
+
+const messages=document.getElementById("messages");
+const input=document.getElementById("question");
+
+function toggleLanguage(){
+ language=language==="en"?"hi":"en";
+
+ document.getElementById("languageBtn").textContent=
+ language==="en"?"HI":"EN";
+
+ input.placeholder=language==="hi"
+ ?"Apna sawaal likhein..."
+ :"Message Genius AI...";
+
+ document.getElementById("welcomeTitle").textContent=
+ language==="hi"
+ ?"Namaste! Main kaise madad karun?"
+ :"Hello! How can I help?";
+
+ document.getElementById("welcomeText").textContent=
+ language==="hi"
+ ?"Kuch bhi poochhein. Kuch bhi seekhein."
+ :"Ask anything. Learn anything. Create anything.";
+}
+
+function addMessage(text,type){
+ const bubble=document.createElement("div");
+ bubble.className="message "+type;
+
+ if(type==="ai"){
+  const label=document.createElement("div");
+  label.className="ai-label";
+  label.textContent="✦ GENIUS AI";
+  bubble.appendChild(label);
+ }
+
+ const content=document.createElement("div");
+ content.textContent=text;
+ bubble.appendChild(content);
+
+ messages.appendChild(bubble);
+ messages.scrollTop=messages.scrollHeight;
+}
+
+function askSuggestion(text){
+ input.value=text;
+ sendMessage();
+}
+
+function demoReply(question){
+ const q=question.toLowerCase();
+
+ if(q.includes("hello")||q.includes("hi")||
+ q.includes("namaste")){
+  return language==="hi"
+   ?"Namaste! Main Genius AI hoon. Aapki kya madad kar sakta hoon?"
+   :"Hello! I am Genius AI. How can I help you today?";
+ }
+
+ if(q.includes("translate")){
+  return language==="hi"
+   ?"Yeh demo version hai. Real translation feature AI connection ke baad kaam karega."
+   :"Translation feature will work after connecting the real AI service.";
+ }
+
+ if(q.includes("study")||q.includes("padhai")){
+  return language==="hi"
+   ?"Padhai ke liye ek topic chuniye. Hum use aasaan steps mein samjhaane wala feature banayenge."
+   :"Tell me your subject and topic. The real study assistant will be added with AI integration.";
+ }
+
+ if(q.includes("write")||q.includes("application")){
+  return language==="hi"
+   ?"Aap kis tarah ki application likhna chahte hain? Real writing assistant agle version mein aayega."
+   :"Tell me what kind of application you need. The full AI writing feature is coming soon.";
+ }
+
+ return language==="hi"
+  ?"Aapka sawaal receive ho gaya!\n\nAbhi Genius AI demo mode mein hai. Real intelligent answers ke liye secure AI backend connect karna baaki hai."
+  :"Your question has been received!\n\nGenius AI is currently in demo mode. A secure AI connection is needed for real intelligent answers.";
+}
+
+function showTyping(){
+ const bubble=document.createElement("div");
+ bubble.className="message ai typing";
+ bubble.id="typing";
+ bubble.textContent="Genius AI is thinking...";
+ messages.appendChild(bubble);
+ messages.scrollTop=messages.scrollHeight;
+}
+
+function sendMessage(){
+ const question=input.value.trim();
+ if(!question)return;
+
+ document.getElementById("welcome").classList.add("hidden");
+ document.getElementById("suggestions").classList.add("hidden");
+
+ addMessage(question,"user");
+ chatHistory.push({role:"user",text:question});
+
+ input.value="";
+ input.disabled=true;
+ showTyping();
+
+ setTimeout(()=>{
+  const typing=document.getElementById("typing");
+  if(typing)typing.remove();
+
+  const reply=demoReply(question);
+  addMessage(reply,"ai");
+  chatHistory.push({role:"ai",text:reply});
+
+  input.disabled=false;
+  input.focus();
+ },900);
+}
+
+function newChat(){
+ messages.innerHTML="";
+ chatHistory=[];
+ input.value="";
+ document.getElementById("welcome").classList.remove("hidden");
+ document.getElementById("suggestions").classList.remove("hidden");
+}
+
+input.addEventListener("keydown",function(e){
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
+});
+</script>
+
+</body>
+</html>
+
